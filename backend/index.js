@@ -6,7 +6,6 @@ import cors from 'cors';
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT
 
 app.use(cors())
 
@@ -18,6 +17,6 @@ app.use('/api/v1', router)
 app.use(express.json());
 
 // Server express
-app.listen(port, () => {
+app.listen(5000, () => {
   console.log(`server running brow di port ${port}`);
 });
