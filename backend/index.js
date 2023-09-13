@@ -18,5 +18,5 @@ app.use(express.json());
 
 // Server express
 app.listen(5000, () => {
-  console.log(`server running brow di port ${port}`);
+  console.log(`server running brow di port 5000`);
 });
