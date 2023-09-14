@@ -17,6 +17,6 @@ app.use('/api/v1', router)
 app.use(express.json());
 
 // Server express
-app.(process.env.PORT, () => {
+app.listen(process.env.PORT, () => {
   console.log(`server running brow di port 5000`);
 });
