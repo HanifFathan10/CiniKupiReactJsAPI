@@ -3,20 +3,26 @@ import dotenv from "dotenv";
 import router from './routes/ProductRoute.js';
 import ConnectDb from './config/db.js';
 import cors from 'cors';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser'
+
 
 dotenv.config();
 const app = express();
 
-app.use(cors())
+const jsonParser = bodyParser.json()
+app.use(cookieParser())
+
+// Routing
+app.use('/api/v1', jsonParser, router)
+app.use(express.urlencoded({extended : false}))
+
+app.use(cors({ credentials: true }))
 
 // ConnectDb()
 ConnectDb();
 
-// Routing
-app.use('/api/v1', router)
-app.use(express.json());
-
 // Server express
 app.listen(process.env.PORT, () => {
-  console.log(`server running brow di port 5000`);
+  console.log(`server running brow di port ${process.env.PORT}`);
 });

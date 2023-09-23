@@ -1,2 +1,27 @@
-GET http://localhost:5000/api/v1/post
+GET http://localhost:5000/api/v1/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTU0ODM0NTIsImV4cCI6MTY5NTQ4MzQ4Mn0.32nzfbAdOIlrvOKgIjvwy55_vGtOZVYAheMqyHXdFsg
+###
+POST http://localhost:5000/api/v1/users
+Content-Type: application/json
 
+{
+    "username" : "test",
+    "email" : "test@gmail.com",
+    "password" : "test123",
+    "confirmPassword" : "test123"
+}
+
+###
+POST http://localhost:5000/api/v1/login
+Content-Type: application/json
+
+{
+    "email" : "haniffathan@gmail.com",
+    "password" : "hanif123"
+}
+
+###
+GET http://localhost:5000/api/v1/token
+
+###
+DELETE http://localhost:5000/api/v1/logout
