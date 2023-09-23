@@ -1,7 +1,41 @@
 GET http://localhost:5000/api/v1/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTU0ODM0NTIsImV4cCI6MTY5NTQ4MzQ4Mn0.32nzfbAdOIlrvOKgIjvwy55_vGtOZVYAheMqyHXdFsg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTU0ODgxMTIsImV4cCI6MTY5NTQ4ODE0Mn0.sN_AZWlp0XfFBWXmwKoQ5VdDi34paPadx5f7paixauw
 ###
 POST http://localhost:5000/api/v1/users
+Content-Type: application/json
+
+{
+    "username" : "hanif ganteng",
+    "email" : "hanifganteng@gmail.com",
+    "password" : "haniffathan02",
+    "confirmPassword" : "haniffathan02"
+}
+
+###
+POST http://localhost:5000/api/v1/login
+Content-Type: application/json
+
+{
+    "email" : "hanifganteng@gmail.com",
+    "password" : "haniffathan02"
+}
+
+###
+GET http://localhost:5000/api/v1/token
+
+###
+DELETE http://localhost:5000/api/v1/logout
+
+
+
+
+
+###
+GET https://cini-kupi-react-js-api.vercel.app/api/v1/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTU0ODM0NTIsImV4cCI6MTY5NTQ4MzQ4Mn0.32nzfbAdOIlrvOKgIjvwy55_vGtOZVYAheMqyHXdFsg
+
+###
+POST https://cini-kupi-react-js-api.vercel.app/api/v1/users
 Content-Type: application/json
 
 {
@@ -12,16 +46,10 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:5000/api/v1/login
+POST https://cini-kupi-react-js-api.vercel.app/api/v1/login
 Content-Type: application/json
 
 {
     "email" : "haniffathan@gmail.com",
     "password" : "hanif123"
 }
-
-###
-GET http://localhost:5000/api/v1/token
-
-###
-DELETE http://localhost:5000/api/v1/logout

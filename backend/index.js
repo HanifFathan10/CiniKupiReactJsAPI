@@ -17,7 +17,7 @@ app.use(cookieParser())
 app.use('/api/v1', jsonParser, router)
 app.use(express.urlencoded({extended : false}))
 
-app.use(cors({ credentials: true }))
+app.use(cors({ credentials: true, origin:'https://cini-kupi-react-js-api.vercel.app'}))
 
 // ConnectDb()
 ConnectDb();
