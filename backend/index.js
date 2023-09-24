@@ -10,6 +10,13 @@ import cookieParser from 'cookie-parser'
 dotenv.config();
 const app = express();
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 const jsonParser = bodyParser.json()
 app.use(cookieParser())
 
@@ -17,7 +24,7 @@ app.use(cookieParser())
 app.use('/api/v1', jsonParser, router)
 app.use(express.urlencoded({extended : false}))
 
-app.use(cors({ credentials: true, origin:'https://cini-kupi-react-js-api.vercel.app'}))
+app.use(cors({ credentials: true}))
 
 // ConnectDb()
 ConnectDb();
