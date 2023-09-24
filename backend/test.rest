@@ -1,5 +1,6 @@
 GET http://localhost:5000/api/v1/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTU0ODgxMTIsImV4cCI6MTY5NTQ4ODE0Mn0.sN_AZWlp0XfFBWXmwKoQ5VdDi34paPadx5f7paixauw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyRW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluIiwidXNlcklkIjoiNjUwZmUxN2M1MTNhOGNhMjljOGIxNDZkIiwiaWF0IjoxNjk1NTQ0NDY0LCJleHAiOjE2OTU1NDQ0ODR9.2Aqx1Q6Jz1iDy9VvJRNIEeAHDxR_5AfxLHeBvPp1TRs
+
 ###
 POST http://localhost:5000/api/v1/users
 Content-Type: application/json
@@ -16,8 +17,8 @@ POST http://localhost:5000/api/v1/login
 Content-Type: application/json
 
 {
-    "email" : "hasna@gmail.com",
-    "password" : "Ochaa10"
+    "email" : "admin@gmail.com",
+    "password" : "admin123"
 }
 
 ###
@@ -49,8 +50,8 @@ POST https://cini-kupi-react-js-api.vercel.app/api/v1/login
 Content-Type: application/json
 
 {
-    "email" : "hasna@gmail.com",
-    "password" : "Ochaa10"
+    "email" : "admin@gmail.com",
+    "password" : "admin123"
 }
 
 ###
