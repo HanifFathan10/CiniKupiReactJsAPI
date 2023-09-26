@@ -9,7 +9,7 @@ const router = express.Router();
 // Product
 router.post('/post', TambahData)
 router.get('/post', TampilData)
-router.get('/post/detailproduct/:_id', DetailPost)
+router.get('/post/:id', DetailPost)
 
 
 // Users
