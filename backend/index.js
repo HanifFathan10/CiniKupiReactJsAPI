@@ -5,6 +5,7 @@ import ConnectDb from "./config/db.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+// import multer from "multer";
 
 dotenv.config();
 const app = express();
@@ -17,6 +18,25 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
   next();
 });
+
+// const fileStorage = multer.diskStorage({
+//   destination: (req, file, callback) => {
+//     callback(null, "/public/images");
+//   },
+//   filename: (req, file, callback) => {
+//     callback(null, new Date().getTime() + "-" + file.originalname);
+//   },
+// });
+
+// const fileFilter = (req, file, callback) => {
+//   if (file.mimetype === "public/images/png" || file.mimetype === "public/images/jpg" || file.mimetype === "public/images/jpeg") {
+//     callback(null, true);
+//   } else {
+//     callback(null, true);
+//   }
+// };
+
+app.use(express.static("public"));
 
 const jsonParser = bodyParser.json();
 app.use(cookieParser());
