@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String
+  },
+  price: {
+    type: Number,
+  },
+  image: {
+    type: String
+  }
+})
+
 const schema = new mongoose.Schema(
   {
     name: {
@@ -8,19 +20,7 @@ const schema = new mongoose.Schema(
     image: {
       type: String,
     },
-    product: [
-      {
-        name: {
-          type: String,
-        },
-        price: {
-          type: Number,
-        },
-        image: {
-          type: String,
-        },
-      },
-    ],
+    product: [productSchema],
   },
   {
     timestamps: true,
