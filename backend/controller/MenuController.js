@@ -85,6 +85,53 @@ const getMenuById = async (req, res) => {
   }
 };
 
+export const getNestedMenuById = async (req, res) => {
+  try {
+    const response = await menuConnections.findOne(
+      { "product._id": req.params.id },
+      {
+        "product.$": 1,
+      }
+    );
+
+    return res.status(200).json({
+      message: "Get Nested Data Successfuly",
+      data: response,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Somethink went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const InsertNestedData = async (req, res) => {
+  try {
+    const productId = req.params.id; // Ambil ID dokumen yang ingin diperbarui
+    const newProductData = req.body; // Ambil data produk baru dari body permintaan
+
+    // Gunakan metode findOneAndUpdate untuk menambahkan produk ke dokumen yang ada
+    const result = await menuConnections.findOneAndUpdate({ _id: productId }, { $push: { product: newProductData } }, { new: true });
+
+    if (result) {
+      res.status(201).json({
+        message: "Product added successfully",
+        data: result,
+      });
+    } else {
+      res.status(404).json({
+        message: "Document not found",
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
+
 const TambahMenuById = async (req, res) => {
   try {
     const menu = await menuConnections.findOneAndReplace({ _id: req.params.id }, req.body, { new: true });
@@ -115,20 +162,6 @@ export const updateNestedData = async (req, res) => {
   }
 };
 
-export const getNestedDataById = async (req, res) => {
-  try {
-    const result = await menuConnections.findOne({ "product._id": req.params.id });
-    if (result) {
-      res.json(result);
-    } else {
-      res.status(404).json({ error: "product not found" });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "something went wrong" });
-  }
-};
-
 export const insetNestedById = async (req, res) => {
   try {
     const create = await menuConnections.create({});
@@ -137,6 +170,5 @@ export const insetNestedById = async (req, res) => {
     res.status(500).json({ message: "somethink went wrong" });
   }
 };
-
 
 export { TambahData, TampilData, DetailPost, TambahMenu, TampilMenu, getMenuById, TambahMenuById };
