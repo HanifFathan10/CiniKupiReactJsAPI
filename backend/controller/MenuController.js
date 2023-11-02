@@ -2,7 +2,7 @@ import menuConnections from "../models/MenuModel.js";
 import mongooseConnection from "../models/UserModel.js";
 
 // Product
-const TambahData = async (req, res) => {
+export const TambahData = async (req, res) => {
   const postData = await mongooseConnection(req.body);
   try {
     const newPost = await postData.create();
@@ -19,7 +19,7 @@ const TambahData = async (req, res) => {
   }
 };
 
-const TampilData = async (req, res) => {
+export const TampilData = async (req, res) => {
   try {
     const view = await mongooseConnection.find();
     res.json(view);
@@ -31,7 +31,7 @@ const TampilData = async (req, res) => {
   }
 };
 
-const DetailPost = async (req, res) => {
+export const DetailPost = async (req, res) => {
   try {
     const posts = await mongooseConnection.findById(req.params.id);
     res.json(posts);
@@ -44,8 +44,7 @@ const DetailPost = async (req, res) => {
 };
 
 // Menu
-
-const TambahMenu = async (req, res) => {
+export const TambahMenu = async (req, res) => {
   try {
     const InsertMenu = await menuConnections.create(req.body);
 
@@ -60,7 +59,7 @@ const TambahMenu = async (req, res) => {
   }
 };
 
-const TampilMenu = async (req, res) => {
+export const TampilMenu = async (req, res) => {
   try {
     const view = await menuConnections.find();
     res.json(view);
@@ -72,11 +71,11 @@ const TampilMenu = async (req, res) => {
   }
 };
 
-const getMenuById = async (req, res) => {
+export const getMenuById = async (req, res) => {
   try {
     const response = await menuConnections.findOne({ _id: req.params.id });
 
-    return res.status(201).json({ data: response });
+    return res.status(201).json({ message: "Get Data By Id Successfully", data: response });
   } catch (error) {
     res.status(400).json({
       status: "fail",
@@ -106,13 +105,13 @@ export const getNestedMenuById = async (req, res) => {
   }
 };
 
-export const InsertNestedData = async (req, res) => {
+export const InsertNestedDataById = async (req, res) => {
   try {
     const productId = req.params.id; // Ambil ID dokumen yang ingin diperbarui
     const newProductData = req.body; // Ambil data produk baru dari body permintaan
 
     // Gunakan metode findOneAndUpdate untuk menambahkan produk ke dokumen yang ada
-    const result = await menuConnections.findOneAndUpdate({ _id: productId }, { $push: { product: newProductData } }, { new: true });
+    const result = await menuConnections.findOneAndUpdate({ _id: productId }, { $push: { product: newProductData } }, { returnOriginal: false });
 
     if (result) {
       res.status(201).json({
@@ -132,7 +131,7 @@ export const InsertNestedData = async (req, res) => {
   }
 };
 
-const TambahMenuById = async (req, res) => {
+export const UbahMenuById = async (req, res) => {
   try {
     const menu = await menuConnections.findOneAndReplace({ _id: req.params.id }, req.body, { new: true });
     res.status(200).json({ message: "Insert data successfuly", data: menu });
@@ -162,13 +161,17 @@ export const updateNestedData = async (req, res) => {
   }
 };
 
-export const insetNestedById = async (req, res) => {
+export const getNameByUrl = async (req, res) => {
   try {
-    const create = await menuConnections.create({});
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "somethink went wrong" });
-  }
-};
+    try {
+      const response = await menuConnections.findOne({ nameurl: req.params.nameurl });
 
-export { TambahData, TampilData, DetailPost, TambahMenu, TampilMenu, getMenuById, TambahMenuById };
+      return res.status(200).json({ message: "Get Data By nameurl Successfully", data: response });
+    } catch (error) {
+      res.status(400).json({
+        status: "fail",
+        message: error.message,
+      });
+    }
+  } catch (error) {}
+};
