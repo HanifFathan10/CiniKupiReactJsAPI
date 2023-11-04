@@ -77,7 +77,7 @@ app.get("/auth/google/callback", async (req, res) => {
   };
   const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 2 });
 
-  return res.redirect(`https://cini-kupi.vercel.app/auth-success?accessToken=${accessToken}`);
+  return res.redirect(`http://localhost:5173/auth-success?accessToken=${accessToken}`);
 });
 
 // ConnectDb()
