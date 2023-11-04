@@ -5,7 +5,9 @@ import ConnectDb from "./config/db.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-// import multer from "multer";
+import { google } from "googleapis";
+import usersConnection from "./models/UsersModel.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 const app = express();
@@ -19,22 +21,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// const fileStorage = multer.diskStorage({
-//   destination: (req, file, callback) => {
-//     callback(null, "/public/images");
-//   },
-//   filename: (req, file, callback) => {
-//     callback(null, new Date().getTime() + "-" + file.originalname);
-//   },
-// });
+const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, "https://cini-kupi-react-js-api.vercel.app/auth/google/callback");
 
-// const fileFilter = (req, file, callback) => {
-//   if (file.mimetype === "public/images/png" || file.mimetype === "public/images/jpg" || file.mimetype === "public/images/jpeg") {
-//     callback(null, true);
-//   } else {
-//     callback(null, true);
-//   }
-// };
+const scopes = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"];
+
+const authorizationUrl = oauth2Client.generateAuthUrl({
+  access_type: "offline",
+  scope: scopes,
+  include_granted_scopes: true,
+});
 
 app.use(express.static("public"));
 
@@ -44,8 +39,46 @@ app.use(cookieParser());
 // Routing
 app.use("/api/v1", jsonParser, router);
 app.use(express.urlencoded({ extended: false }));
-
 app.use(cors({ credentials: true }));
+// GOOGLE Login
+app.get("/auth/google", (req, res) => {
+  res.redirect(authorizationUrl);
+})
+// GOOGLE callback login
+app.get("/auth/google/callback", async (req, res) => {
+  const { code } = req.query
+  const { tokens } = await oauth2Client.getToken(code);
+  oauth2Client.setCredentials(tokens);
+
+  const oauth2 = google.oauth2({
+    auth: oauth2Client,
+    version: "v2",
+  });
+
+  const { data } = await oauth2.userinfo.get();
+
+  if (!data) {
+    return res.json({ data: data });
+  }
+
+  let user = await usersConnection.findOne({ email: data.email });
+
+  if (!user) {
+    user = await usersConnection.create({
+      username: data.username,
+      email: data.email,
+    });
+  }
+
+  const payload = {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+  };
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 2 });
+
+  return res.redirect(`https://cini-kupi.vercel.app/auth-success?accessToken=${accessToken}`);
+});
 
 // ConnectDb()
 ConnectDb();

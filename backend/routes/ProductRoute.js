@@ -28,6 +28,7 @@ router.patch("/nested/:id", updateNestedData);
 // Users
 router.get("/users", verifyToken, TampilDataUser);
 router.get("/token", refreshToken);
+router.get('/')
 
 router.post("/users", RegisterData);
 router.post("/login", LoginData);
