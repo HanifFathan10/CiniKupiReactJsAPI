@@ -51,12 +51,6 @@ export const LoginData = async (req, res) => {
     });
   }
 
-  if (email && password !== users) {
-    return res.status(404).json({
-      message: "email & password not found"
-    })
-  }
-
   if (!users.password) {
     return res.status(404).json({
       message: "password not found",
@@ -67,10 +61,10 @@ export const LoginData = async (req, res) => {
 
   if (comparePassword) {
     const payload = {
-      _id: users._id,
-      username: users.username,
-      email: users.email,
-      refresh_token: users.refresh_token,
+      _id: users?._id,
+      username: users?.username,
+      email: users?.email,
+      refresh_token: users?.refresh_token,
     };
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 1 });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
