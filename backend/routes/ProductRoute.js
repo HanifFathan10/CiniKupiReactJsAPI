@@ -26,11 +26,11 @@ router.put("/menu/:id", UbahMenuById);
 router.patch("/nested/:id", updateNestedData);
 
 // Users
-router.get("/users", verifyToken, TampilDataUser);
+router.get("/users", TampilDataUser);
 router.get("/token", refreshToken);
 router.get('/')
 
-router.post("/users", RegisterData);
+router.post("/register", RegisterData);
 router.post("/login", LoginData);
 
 router.delete("/logout", verifyToken, LogoutData);

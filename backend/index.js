@@ -74,10 +74,24 @@ app.get("/auth/google/callback", async (req, res) => {
     _id: user._id,
     username: user.username,
     email: user.email,
+    refresh_token: user.refresh_token,
   };
   const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 2 });
+  const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: 60 * 60 * 1,
+  });
 
-  return res.redirect(`http://localhost:5173/auth-success?accessToken=${accessToken}`);
+  await usersConnection.findOneAndUpdate(
+    { _id: user._id }, // Kriteria pencarian
+    { refresh_token: refreshToken } // Nilai yang akan diupdate
+  );
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1,
+  });
+
+  return res.redirect(`https://cini-kupi.vercel.app/auth-success?accessToken=${accessToken}`);
 });
 
 // ConnectDb()

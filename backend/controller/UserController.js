@@ -15,20 +15,19 @@ export const TampilDataUser = async (req, res) => {
 };
 
 export const RegisterData = async (req, res) => {
-  const { username, email, password, confirmPassword } = req.body;
-  if (password !== confirmPassword) return res.status(400).json({ message: "Password dan confirm password tidak sesuai!!" });
-  const salt = await bcrypt.genSalt();
-  const hashPassword = await bcrypt.hash(password, salt);
-
-  const users = await usersConnection.findOne({ email: email });
-
-  if (email === users.email) {
-    return res.status(401).json({
-      message: "Email sudah terdaftar",
-    });
-  }
-
   try {
+    const { username, email, password, confirmPassword } = req.body;
+    if (password !== confirmPassword) return res.status(400).json({ message: "Password dan confirm password tidak sesuai!!" });
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const users = await usersConnection.findOne({ email: email });
+
+    if (email === users?.email) {
+      return res.status(401).json({
+        message: "Email sudah terdaftar",
+      });
+    }
     await usersConnection.create({
       username,
       email,
@@ -48,13 +47,19 @@ export const LoginData = async (req, res) => {
   const users = await usersConnection.findOne({ email: email });
   if (!users) {
     return res.status(404).json({
-      error: "user not Found",
+      message: "user not Found",
     });
+  }
+
+  if (email && password !== users) {
+    return res.status(404).json({
+      message: "email & password not found"
+    })
   }
 
   if (!users.password) {
     return res.status(404).json({
-      error: "password not found",
+      message: "password not found",
     });
   }
 
@@ -67,9 +72,9 @@ export const LoginData = async (req, res) => {
       email: users.email,
       refresh_token: users.refresh_token,
     };
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 2 });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 1 });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-      expiresIn: 60 * 60 * 24,
+      expiresIn: 60 * 60 * 1,
     });
 
     await usersConnection.findOneAndUpdate(
@@ -79,16 +84,16 @@ export const LoginData = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1,
     });
 
-    return res.status(200).json({
-      data: {
+    return res.status(200).json({ data: {
         id: users._id,
         username: users.username,
         email: users.email,
       },
       accessToken,
+      message: "Register Berhasil!!"
     });
   } else {
     return res.status(404).json({ message: "Wrong password" });
