@@ -66,9 +66,9 @@ export const LoginData = async (req, res) => {
       email: users?.email,
       refresh_token: users?.refresh_token,
     };
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 1 });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-      expiresIn: 60 * 60 * 1,
+      expiresIn: '60s',
     });
 
     await usersConnection.findOneAndUpdate(
@@ -86,8 +86,7 @@ export const LoginData = async (req, res) => {
         username: users.username,
         email: users.email,
       },
-      accessToken,
-      message: "Register Berhasil!!"
+      accessToken
     });
   } else {
     return res.status(404).json({ message: "Wrong password" });
@@ -104,12 +103,8 @@ export const LogoutData = async (req, res) => {
   if (!user) return res.sendStatus(204);
   const _id = user._id;
   await usersConnection.findOneAndUpdate(
-    { refresh_token: null },
-    {
-      where: {
-        _id,
-      },
-    }
+    { _id: user._id },
+    { refresh_token: null }
   );
   res.clearCookie("refresToken");
   return res.sendStatus(200);
