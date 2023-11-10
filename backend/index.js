@@ -8,10 +8,26 @@ import cookieParser from "cookie-parser";
 import { google } from "googleapis";
 import usersConnection from "./models/UsersModel.js";
 import jwt from "jsonwebtoken";
+import session from "express-session";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+app.set("trust proxy", 1);
+
+app.use(
+  session({
+    secret: "secretcode",
+    resave: true,
+    saveUninitialize: true,
+    cookie: {
+      sameSite: "none",
+      secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+  })
+);
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -20,6 +36,11 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
   next();
 });
+
+app.use(express.static("public"));
+
+const jsonParser = bodyParser.json();
+app.use(cookieParser());
 
 const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, "https://cini-kupi-react-js.vercel.app/auth/google/callback");
 
@@ -31,22 +52,21 @@ const authorizationUrl = oauth2Client.generateAuthUrl({
   include_granted_scopes: true,
 });
 
-app.use(express.static("public"));
-
-const jsonParser = bodyParser.json();
-app.use(cookieParser());
-
 // Routing
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 app.use("/api/v1", jsonParser, router);
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ credentials: true }));
+app.use(cors({ origin: "https://cini-kupi.vercel.app", credentials: true }));
+
 // GOOGLE Login
 app.get("/auth/google", (req, res) => {
   res.redirect(authorizationUrl);
-})
+});
 // GOOGLE callback login
 app.get("/auth/google/callback", async (req, res) => {
-  const { code } = req.query
+  const { code } = req.query;
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
 
@@ -73,11 +93,11 @@ app.get("/auth/google/callback", async (req, res) => {
   const payload = {
     _id: user._id,
     username: user.username,
-    email: user.email
+    email: user.email,
   };
-  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 1 });
 
-  return res.redirect(`https://cini-kupi.vercel.app/auth-success?accessToken=${accessToken}`);
+  res.redirect(`https://cini-kupi.vercel.app/auth-success?accessToken=${accessToken}`);
 });
 
 // ConnectDb()
