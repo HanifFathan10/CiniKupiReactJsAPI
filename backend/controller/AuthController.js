@@ -1,6 +1,8 @@
 import { google } from "googleapis";
-import usersConnection from "./models/UsersModel.js";
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv'
+import usersConnection from "../models/UsersModel.js";
+dotenv.config();
 
 const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, `${process.env.SERVER_URL_VERCEL}/auth/google/callback`);
 

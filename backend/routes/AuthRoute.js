@@ -1,5 +1,5 @@
 import express from "express";
-import { AuthGoogle, AuthGoogleCallback } from "../controller/AuthController";
+import { AuthGoogle, AuthGoogleCallback } from "../controller/AuthController.js";
 
 export const route = express.Router();
 
