@@ -42,7 +42,7 @@ app.use(express.static("public"));
 const jsonParser = bodyParser.json();
 app.use(cookieParser());
 
-const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, "https://cini-kupi-react-js.vercel.app/auth/google/callback");
+const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, `${process.env.SERVER_URL_VERCEL}/auth/google/callback`);
 
 const scopes = ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"];
 
@@ -97,7 +97,7 @@ app.get("/auth/google/callback", async (req, res) => {
   };
   const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 1 });
 
-  res.redirect(`https://cini-kupi.vercel.app/auth-success?accessToken=${accessToken}`);
+  res.redirect(`${process.env.CLIENT_URL_VERCEL}/auth-success?accessToken=${accessToken}`);
 });
 
 // ConnectDb()
