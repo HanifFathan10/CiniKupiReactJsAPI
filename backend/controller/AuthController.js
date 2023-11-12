@@ -48,7 +48,7 @@ export const AuthGoogleCallback = async (req, res) => {
     username: user.username,
     email: user.email,
   };
-  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60 * 60 * 1 });
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "60s" });
 
   res.redirect(`${process.env.CLIENT_URL_VERCEL}/auth-success?accessToken=${accessToken}`);
 };

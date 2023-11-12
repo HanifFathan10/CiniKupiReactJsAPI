@@ -66,46 +66,45 @@ export const LoginData = async (req, res) => {
       email: users?.email,
       refresh_token: users?.refresh_token,
     };
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-      expiresIn: '60s',
+      expiresIn: "1d",
     });
 
-    await usersConnection.findOneAndUpdate(
+    await usersConnection.updateOne(
       { _id: users._id }, // Kriteria pencarian
-      { refresh_token: refreshToken } // Nilai yang akan diupdate
+      { $set: { refresh_token: refreshToken } } // Nilai yang akan diupdate
     );
-
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1,
+      secure: true, // aktifkan jika mengakses menggunakan https
+      express: new Date(Date.now() + 10000),
     });
+    console.log("cookie created successfully");
 
-    return res.status(200).json({ data: {
-        id: users._id,
-        username: users.username,
-        email: users.email,
-      },
-      accessToken
-    });
+    return res.json({ accessToken });
   } else {
     return res.status(404).json({ message: "Wrong password" });
   }
 };
 
-export const LogoutData = async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.sendStatus(204);
+export const LogoutData = async(req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
 
-  const user = await usersConnection.find({
-    refresh_token: refreshToken,
-  });
-  if (!user) return res.sendStatus(204);
-  const _id = user._id;
-  await usersConnection.findOneAndUpdate(
-    { _id: user._id },
-    { refresh_token: null }
-  );
-  res.clearCookie("refresToken");
-  return res.sendStatus(200);
+    const user = await usersConnection.findOne({
+      refresh_token: refreshToken,
+    });
+    if (!user) return res.json({ message: "user not found" });
+
+    await usersConnection.updateOne({ _id: user._id }, { $set: { refresh_token: null } });
+    if (refreshToken == user.refresh_token) {
+      res.clearCookie("refreshToken")
+    } else {
+      res.json({ message: "refresh token not found" });
+    } 
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+  }
 };

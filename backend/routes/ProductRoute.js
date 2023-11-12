@@ -28,11 +28,10 @@ router.patch("/nested/:id", updateNestedData);
 // Users
 router.get("/users", TampilDataUser);
 router.get("/token", refreshToken);
-router.get('/')
 
 router.post("/register", RegisterData);
 router.post("/login", LoginData);
 
-router.delete("/logout", verifyToken, LogoutData);
+router.post("/logout", LogoutData);
 
 export default router;
