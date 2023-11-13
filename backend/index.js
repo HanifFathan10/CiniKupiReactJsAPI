@@ -16,7 +16,7 @@ app.use(express.static("public"));
 const jsonParser = bodyParser.json();
 
 const corsOptions = {
-  origin: `${process.env.CLIENT_URL_VERCEL}`,
+  origin: [`${process.env.CLIENT_URL_VERCEL}`, `${process.env.CLIENT_URL}`],
   methods: 'GET, POST, PATCH, PUT, DELETE',
   allowedHeaders: 'Content-Type, Authorization',
   credentials: true,

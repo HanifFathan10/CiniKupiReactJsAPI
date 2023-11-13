@@ -77,7 +77,8 @@ export const LoginData = async (req, res) => {
     );
     res.cookie("refreshToken", refreshToken, {
       secure: true, // aktifkan jika mengakses menggunakan https
-      express: new Date(Date.now() + 10000),
+      maxAge: 3600000,
+      sameSite: "none"
     });
     console.log("cookie created successfully");
 
