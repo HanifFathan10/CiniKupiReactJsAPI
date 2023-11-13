@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import jwt from "jsonwebtoken";
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 import usersConnection from "../models/UsersModel.js";
 dotenv.config();
 
@@ -36,19 +36,33 @@ export const AuthGoogleCallback = async (req, res) => {
 
   let user = await usersConnection.findOne({ email: data.email });
 
+  const payload = {
+    _id: user?._id,
+    username: user?.username,
+    email: user?.email,
+  };
+
+  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+  const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" });
+
   if (!user) {
-    user = await usersConnection.create({
-      username: data.username,
+    await usersConnection.create({
+      username: data.name,
       email: data.email,
+      refresh_token: refreshToken,
     });
   }
 
-  const payload = {
-    _id: user._id,
-    username: user.username,
-    email: user.email,
-  };
-  const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "60s" });
+  await usersConnection.updateOne(
+    {_id: user._id},
+    { $set: { refresh_token: refreshToken}}
+  )
+
+  res.cookie("refreshToken", refreshToken, {
+    secure: true, // aktifkan jika mengakses menggunakan https
+    maxAge: 3600000,
+    sameSite: "none",
+  });
 
   res.redirect(`${process.env.CLIENT_URL_VERCEL}/auth-success?accessToken=${accessToken}`);
 };
