@@ -76,7 +76,6 @@ export const LoginData = async (req, res) => {
       { $set: { refresh_token: refreshToken } } // Nilai yang akan diupdate
     );
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
       secure: true, // aktifkan jika mengakses menggunakan https
       express: new Date(Date.now() + 10000),
     });
