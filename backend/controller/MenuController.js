@@ -75,7 +75,7 @@ export const getMenuById = async (req, res) => {
   try {
     const response = await menuConnections.findOne({ _id: req.params.id });
 
-    return res.status(201).json({ message: "Get Data By Id Successfully", data: response });
+    return res.status(200).json({ message: "Get Data By Id Successfully", data: response });
   } catch (error) {
     res.status(400).json({
       status: "fail",
@@ -144,16 +144,14 @@ export const UbahMenuById = async (req, res) => {
 };
 
 export const updateNestedData = async (req, res) => {
-  console.log(req.params);
   const orderId = req.params.id;
   try {
     const result = await menuConnections.findOneAndUpdate({ "product._id": orderId }, { $set: { "product.$": req.body } }, { new: true });
 
-    console.log(result);
     if (result) {
       res.json(result);
     } else {
-      res.status(404).json({ error: "something went wrong" });
+      res.status(404).json({ error: "product by id not found" });
     }
   } catch (error) {
     console.log(error.message);
@@ -163,15 +161,13 @@ export const updateNestedData = async (req, res) => {
 
 export const getNameByUrl = async (req, res) => {
   try {
-    try {
-      const response = await menuConnections.findOne({ nameurl: req.params.nameurl });
+    const response = await menuConnections.findOne({ nameurl: req.params.nameurl });
 
-      return res.status(200).json({ message: "Get Data By nameurl Successfully", data: response });
-    } catch (error) {
-      res.status(400).json({
-        status: "fail",
-        message: error.message,
-      });
-    }
-  } catch (error) {}
+    return res.status(200).json({ message: "Get Data By nameurl Successfully", data: response });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
 };
