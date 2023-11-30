@@ -82,7 +82,10 @@ export const LoginData = async (req, res) => {
     });
     console.log("cookie created successfully");
 
-    return res.json({ accessToken });
+    return res.json({data: {
+      username: users?.username,
+      email: users?.email,
+    }, accessToken});
   } else {
     return res.status(404).json({ message: "Wrong password" });
   }
