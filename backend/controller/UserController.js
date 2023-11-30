@@ -17,13 +17,14 @@ export const TampilDataUser = async (req, res) => {
 export const RegisterData = async (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
+    if ((!username && !email && !password && !confirmPassword)) return res.status(400).json({ message: "Input tidak boleh kosong!!" });
     if (password !== confirmPassword) return res.status(400).json({ message: "Password dan confirm password tidak sesuai!!" });
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
 
     const users = await usersConnection.findOne({ email: email });
 
-    if (email === users?.email) {
+    if (email == users.email) {
       return res.status(401).json({
         message: "Email sudah terdaftar",
       });
@@ -43,6 +44,7 @@ export const RegisterData = async (req, res) => {
 
 export const LoginData = async (req, res) => {
   const { email, password } = req.body;
+  if (!email && !password) return res.status(400).json({ message: "Email dan Password wajib diisi!!" })
 
   const users = await usersConnection.findOne({ email: email });
   if (!users) {
@@ -78,20 +80,23 @@ export const LoginData = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       secure: true, // aktifkan jika mengakses menggunakan https
       maxAge: 3600000,
-      sameSite: "none"
+      sameSite: "none",
     });
     console.log("cookie created successfully");
 
-    return res.json({data: {
-      username: users?.username,
-      email: users?.email,
-    }, accessToken});
+    return res.json({
+      data: {
+        username: users.username,
+        email: users.email,
+      },
+      accessToken,
+    });
   } else {
     return res.status(404).json({ message: "Wrong password" });
   }
 };
 
-export const LogoutData = async(req, res) => {
+export const LogoutData = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
@@ -102,10 +107,10 @@ export const LogoutData = async(req, res) => {
 
     await usersConnection.updateOne({ _id: user._id }, { $set: { refresh_token: null } });
     if (refreshToken == user.refresh_token) {
-      res.clearCookie("refreshToken")
+      res.clearCookie("refreshToken");
     } else {
       res.json({ message: "refresh token not found" });
-    } 
+    }
     return res.sendStatus(200);
   } catch (error) {
     console.log(error);
