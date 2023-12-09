@@ -17,14 +17,15 @@ export const TampilDataUser = async (req, res) => {
 export const RegisterData = async (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
-    if ((!username && !email && !password && !confirmPassword)) return res.status(400).json({ message: "Input tidak boleh kosong!!" });
-    if (password !== confirmPassword) return res.status(400).json({ message: "Password dan confirm password tidak sesuai!!" });
+    if (!username && !email && !password && !confirmPassword) return res.status(401).json({ message: "Input tidak boleh kosong!!" });
+    if (!email && !password && !confirmPassword) return res.status(401).json({ message: "email dan password tidak boleh kosong!!" });
+    if (password !== confirmPassword) return res.status(401).json({ message: "Password dan confirm password tidak sesuai!!" });
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
 
-    const users = await usersConnection.findOne({ email: email });
+    const users = await usersConnection.findOne({ email });
 
-    if (email == users.email) {
+    if (users) {
       return res.status(401).json({
         message: "Email sudah terdaftar",
       });
@@ -44,7 +45,7 @@ export const RegisterData = async (req, res) => {
 
 export const LoginData = async (req, res) => {
   const { email, password } = req.body;
-  if (!email && !password) return res.status(400).json({ message: "Email dan Password wajib diisi!!" })
+  if (!email && !password) return res.status(400).json({ message: "Email dan Password wajib diisi!!" });
 
   const users = await usersConnection.findOne({ email: email });
   if (!users) {
